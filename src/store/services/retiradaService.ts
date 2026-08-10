@@ -1,0 +1,24 @@
+import { api } from './api';
+
+export interface RetiradaRecenteResponse {
+  existeRetirada: boolean;
+  ultimaDispensacao?: any;
+  diasDesdeUltimaRetirada?: number;
+  mensagem?: string;
+}
+
+export interface VerifyRetiradaRequest {
+  pacienteCpf: string;
+  medicamentoId: string;
+  estabelecimentoId: string;
+  verificarGlobal: true;
+}
+
+class RetiradaService {
+  async verifyRetiradaRecente(data: VerifyRetiradaRequest): Promise<RetiradaRecenteResponse> {
+    const response = await api.post('/dispensacoes/verify-retirada-recente', data);
+    return response.data;
+  }
+}
+
+export const retiradaService = new RetiradaService();

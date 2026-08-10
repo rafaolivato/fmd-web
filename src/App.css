@@ -1,0 +1,219 @@
+/* src/App.css */
+
+/* ====== IMPORTAR FONTES ====== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ====== CONFIGURAÇÕES GLOBAIS ====== */
+html, body, #root {
+  height: 100%;
+  min-height: 100vh; /* Garante que ocupa a altura total da tela */
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* ====== TIPOGRAFIA ====== */
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* Títulos - usar fonte mais elegante para cabeçalhos */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.5em;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+/* ====== SOBRESCREVER BOOTSTRAP ====== */
+/* Botões */
+.btn {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* Formulários */
+.form-control, .form-label, .form-select, .form-check-label {
+  font-family: 'Inter', sans-serif;
+}
+
+.form-control {
+  font-size: 15px;
+}
+
+/* Navegação */
+.navbar-brand,
+.nav-link,
+.dropdown-item {
+  font-family: 'Inter', sans-serif;
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+/* Tabelas */
+.table th {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+.table td {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Cards */
+.card-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+.card-text {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Alertas */
+.alert {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ====== LOGO E ANIMAÇÕES ====== */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+  font-family: 'Poppins', sans-serif; /* Se for texto */
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* ====== UTILITÁRIOS ====== */
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Classes de utilidade para fontes */
+.font-inter { font-family: 'Inter', sans-serif; }
+.font-poppins { font-family: 'Poppins', sans-serif; }
+.font-thin { font-weight: 300; }
+.font-regular { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* ====== IMPRESSÃO ====== */
+@media print {
+  /* Esconder elementos não importantes na impressão */
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Header profissional para impressão */
+  .print-header {
+    display: block !important;
+    text-align: center;
+    border-bottom: 2px solid #333;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .print-header h1 {
+    color: #2c5aa0;
+    font-size: 24px;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .print-header .subtitle {
+    color: #666;
+    font-size: 14px;
+    margin: 5px 0 0 0;
+  }
+  
+  .print-header .print-date {
+    color: #888;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  /* Melhorar aparência da tabela */
+  table {
+    width: 100% !important;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  th {
+    background-color: #f8f9fa !important;
+    color: #000 !important;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  td, th {
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+  }
+  
+  /* Ajustes gerais */
+  body {
+    font-size: 12px;
+    color: #000;
+    background: white !important;
+    font-family: 'Inter', sans-serif !important;
+  }
+  
+  .card {
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  .card-header {
+    background-color: white !important;
+    border-bottom: 2px solid #333 !important;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Ajustar fontes para impressão */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif !important;
+  }
+}
