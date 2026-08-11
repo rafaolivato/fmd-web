@@ -7,7 +7,7 @@ interface AlertaEstoque {
   medicamento: string;
   quantidade: number;
   estoqueMinimo: number;
-  tipo: 'CRÍTICO' | 'ALERTA' | 'ATENÇÃO';
+  tipo: 'CRITICO' | 'ALERTA' | 'ATENCAO';
 }
 
 interface AlertasEstoqueProps {
@@ -26,18 +26,18 @@ const AlertasEstoque: React.FC<AlertasEstoqueProps> = ({ alertas }) => {
 
   const getBadgeVariant = (tipo: string) => {
     switch (tipo) {
-      case 'CRÍTICO': return 'danger';
+      case 'CRITICO': return 'danger';
       case 'ALERTA': return 'warning';
-      case 'ATENÇÃO': return 'info';
+      case 'ATENCAO': return 'info';
       default: return 'secondary';
     }
   };
 
   const getIcon = (tipo: string) => {
     switch (tipo) {
-      case 'CRÍTICO': return <FaExclamationTriangle className="text-danger" />;
+      case 'CRITICO': return <FaExclamationTriangle className="text-danger" />;
       case 'ALERTA': return <FaExclamationCircle className="text-warning" />;
-      case 'ATENÇÃO': return <FaInfoCircle className="text-info" />;
+      case 'ATENCAO': return <FaInfoCircle className="text-info" />;
       default: return <FaInfoCircle />;
     }
   };
