@@ -72,7 +72,7 @@ const Login: React.FC = () => {
           }}
         >
           <div className="text-center position-relative z-1">
-            <div className="mb-4 bg-white rounded-circle p-3 d-inline-flex align-items-center justify-content-center shadow-sm" style={{ width: '120px', height: '120px' }}>
+            <div className="mb-4 bg-white rounded-circle p-3 d-inline-flex align-items-center justify-content-center shadow-sm" style={{ width: '200px', height: '200px' }}>
               <img 
                 src="/ragdalogo.png"
                 alt="FMD Sistema" 
