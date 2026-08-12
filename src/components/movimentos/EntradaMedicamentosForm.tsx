@@ -248,6 +248,7 @@ const EntradaMedicamentosForm: React.FC<EntradaMedicamentosFormProps> = ({
                       type="date"
                       value={novoItem.dataValidade}
                       onChange={(e) => setNovoItem(prev => ({ ...prev, dataValidade: e.target.value }))}
+                      pattern="\d{4}-\d{2}-\d{2}"
                     />
                   </Form.Group>
                 </Col>
