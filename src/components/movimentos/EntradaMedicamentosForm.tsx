@@ -47,6 +47,17 @@ const EntradaMedicamentosForm: React.FC<EntradaMedicamentosFormProps> = ({
     localizacaoFisica: ''
   });
 
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const regex = /^\d{4}-\d{2}-\d{2}$/; // formato YYYY-MM-DD
+
+    if (regex.test(value)) {
+      setNovoItem(prev => ({ ...prev, dataValidade: value }));
+    } else {
+      alert("Data inválida. Use o formato correto.");
+    }
+  };
+
   const adicionarItem = () => {
     if (!novoItem.medicamentoId || novoItem.quantidade < 1) {
       alert('Selecione um medicamento e informe a quantidade');
@@ -247,8 +258,7 @@ const EntradaMedicamentosForm: React.FC<EntradaMedicamentosFormProps> = ({
                     <Form.Control
                       type="date"
                       value={novoItem.dataValidade}
-                      onChange={(e) => setNovoItem(prev => ({ ...prev, dataValidade: e.target.value }))}
-                      pattern="\d{4}-\d{2}-\d{2}"
+                      onChange={handleDateChange}
                     />
                   </Form.Group>
                 </Col>
