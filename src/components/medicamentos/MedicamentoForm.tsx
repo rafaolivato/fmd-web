@@ -223,6 +223,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({
                 <option value="Supositório">Supositório</option>
                 <option value="Spray">Spray</option>
                 <option value="Adesivo">Adesivo</option>
+                <option value="Unidade">Unidade</option>
               </select>
               {errors.formaFarmaceutica && (
                 <div className="invalid-feedback">{errors.formaFarmaceutica}</div>
