@@ -41,6 +41,13 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
   const [showPsychotropicOnly, setShowPsychotropicOnly] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
+  // Função para verificar se medicamento está com estoque baixo
+  const isLowStock = (medicamento: Medicamento) => {
+    // Só considera estoque baixo se o estoque mínimo for > 0
+    return (medicamento.estoqueMinimo || 0) > 0 && 
+           (medicamento.quantidadeEstoque || 0) <= (medicamento.estoqueMinimo || 0);
+  };
+
   // Filtrar medicamentos
   const filteredMedicamentos = medicamentos.filter(medicamento => {
     const searchLower = searchTerm.toLowerCase();
@@ -49,8 +56,7 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
       medicamento.concentracao.toLowerCase().includes(searchLower) ||
       medicamento.formaFarmaceutica.toLowerCase().includes(searchLower);
 
-    const isLowStock = (medicamento.quantidadeEstoque || 0) <= (medicamento.estoqueMinimo || 0);
-    const matchesLowStock = !showLowStockOnly || isLowStock;
+    const matchesLowStock = !showLowStockOnly || isLowStock(medicamento);
     const matchesPsychotropic = !showPsychotropicOnly || medicamento.psicotropico;
 
     return matchesSearch && matchesLowStock && matchesPsychotropic;
@@ -224,13 +230,12 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
           </div>
         )}
 
-        {/* Barra de busca - Agora com placeholder melhor */}
+        {/* Barra de busca */}
         <div className="mt-3">
           <div className="input-group">
             <span className="input-group-text bg-white border-end-0">
               <FaSearch className="text-muted" />
             </span>
-            <p></p>
             <input
               type="text"
               className="form-control border-start-3 px-2"
@@ -238,7 +243,7 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                minWidth: '300px' // Garante um tamanho mínimo
+                minWidth: '300px'
               }}
               title="Busque por princípio ativo, concentração ou forma farmacêutica"
             />
@@ -351,14 +356,15 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
                 </thead>
                 <tbody>
                   {currentMedicamentos.map(medicamento => {
-                    const isLowStock = (medicamento.quantidadeEstoque || 0) <= (medicamento.estoqueMinimo || 0);
+                    const medicamentoLowStock = isLowStock(medicamento);
+                    const semEstoqueMinimo = !medicamento.estoqueMinimo || medicamento.estoqueMinimo === 0;
 
                     return (
                       <tr key={medicamento.id}>
                         <td className="fw-bold text-primary">
                           <div className="d-flex align-items-center">
                             {medicamento.principioAtivo}
-                            {isLowStock && (
+                            {medicamentoLowStock && (
                               <FaExclamationTriangle 
                                 size={12} 
                                 className="ms-2 text-danger" 
@@ -370,14 +376,26 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
                         <td>{medicamento.concentracao}</td>
                         <td>{medicamento.formaFarmaceutica}</td>
                         <td className="text-center fw-bold">
-                          {medicamento.estoqueMinimo}
+                          {semEstoqueMinimo ? (
+                            <span className="text-muted fst-italic">Não necessário</span>
+                          ) : (
+                            medicamento.estoqueMinimo
+                          )}
                         </td>
-                        <td className={`text-center fw-bold ${isLowStock ? 'text-danger' : 'text-success'}`}>
+                        <td className={`text-center fw-bold ${medicamentoLowStock ? 'text-danger' : semEstoqueMinimo ? 'text-muted' : 'text-success'}`}>
                           <div className="d-flex align-items-center justify-content-center">
                             {medicamento.quantidadeEstoque || 0}
-                            {isLowStock && (
+                            {medicamentoLowStock ? (
                               <div className="ms-2 badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">
                                 Baixo
+                              </div>
+                            ) : semEstoqueMinimo ? (
+                              <div className="ms-2 badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25">
+                                Não necessário
+                              </div>
+                            ) : (
+                              <div className="ms-2 badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
+                                OK
                               </div>
                             )}
                           </div>
@@ -533,7 +551,7 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
                   <select
                     className="form-select form-select-sm w-auto"
                     value={itemsPerPage}
-                    
+                    disabled
                   >
                     <option value="10">10</option>
                     <option value="20">20</option>
