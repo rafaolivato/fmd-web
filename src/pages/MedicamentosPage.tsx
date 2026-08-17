@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import { FaPlusCircle, FaPills, FaSync } from 'react-icons/fa';
 import MedicamentoForm from '../components/medicamentos/MedicamentoForm';
 import MedicamentoList from '../components/medicamentos/MedicamentoList';
 import type { Medicamento, MedicamentoFormData } from '../types/Medicamento';
 import { medicamentoService } from '../store/services/medicamentoService';
+import { relatorioService } from '../store/services/relatorioService';
 
 const MedicamentosPage: React.FC = () => {
   const [medicamentos, setMedicamentos] = useState<Medicamento[]>([]);
@@ -19,19 +20,52 @@ const MedicamentosPage: React.FC = () => {
     loadMedicamentos();
   }, []);
 
-  const loadMedicamentos = async () => {
+ const loadMedicamentos = useCallback(async () => {
+  try {
+    setListLoading(true);
+    setError('');
+    
+    const medicamentosBase = await medicamentoService.getAll();
+    
     try {
-      setListLoading(true);
-      setError('');
-      const data = await medicamentoService.getAll();
-      setMedicamentos(data);
-    } catch (error) {
-      console.error('Erro ao carregar medicamentos:', error);
-      setError('Erro ao carregar medicamentos');
-    } finally {
-      setListLoading(false);
+      const posicaoEstoque = await relatorioService.getPosicaoEstoque();
+      
+      // Agrupa os itens de estoque por medicamento e soma as quantidades
+      const estoqueAgrupado = posicaoEstoque.reduce((acc, item) => {
+        // Cria uma chave única para cada medicamento (baseada no princípio ativo + concentração + forma)
+        const chave = `${item.medicamento.principioAtivo}|${item.medicamento.concentracao}|${item.medicamento.formaFarmaceutica}`;
+        
+        if (!acc[chave]) {
+          acc[chave] = 0;
+        }
+        acc[chave] += item.quantidade;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      // Atualiza os medicamentos com a quantidade total do estoque
+      const medicamentosAtualizados = medicamentosBase.map(med => {
+        const chave = `${med.principioAtivo}|${med.concentracao}|${med.formaFarmaceutica}`;
+        const quantidadeTotal = estoqueAgrupado[chave] || 0;
+        
+        return {
+          ...med,
+          quantidadeEstoque: quantidadeTotal,
+        };
+      });
+      
+      setMedicamentos(medicamentosAtualizados);
+    } catch (estoqueError) {
+      console.warn('Erro ao buscar posição de estoque:', estoqueError);
+      setMedicamentos(medicamentosBase);
     }
-  };
+  } catch (error) {
+    console.error('Erro ao carregar medicamentos:', error);
+    setError('Erro ao carregar medicamentos');
+    setMedicamentos([]);
+  } finally {
+    setListLoading(false);
+  }
+}, []);
 
   const handleSubmit = async (formData: MedicamentoFormData) => {
     try {
@@ -147,7 +181,7 @@ const MedicamentosPage: React.FC = () => {
         </Row>
       )}
 
-      {/* Conteúdo Principa */}
+      {/* Conteúdo Principal */}
       <Row>
         <Col>
           {showForm ? (
