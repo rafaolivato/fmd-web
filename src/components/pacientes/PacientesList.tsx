@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Card, Table, Badge, Button, Pagination } from 'react-bootstrap';
 import type { Paciente } from '../../types/Paciente';
-import { FaEdit, FaUser, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaUser, FaTrash, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface PacientesListProps {
   pacientes: Paciente[];
   onEdit: (paciente: Paciente) => void;
   onDelete: (paciente: Paciente) => void;
   isLoading?: boolean;
-  itemsPerPage?: number; // Nova prop para controlar itens por página
+  itemsPerPage?: number;
 }
 
 const PacientesList: React.FC<PacientesListProps> = ({
@@ -16,9 +16,11 @@ const PacientesList: React.FC<PacientesListProps> = ({
   onEdit,
   onDelete,
   isLoading = false,
-  itemsPerPage = 10 // Valor padrão: 10 itens por página
+  itemsPerPage = 10
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  // Estado para controlar quais CPFs estão visíveis
+  const [showFullCPF, setShowFullCPF] = useState<{ [key: string]: boolean }>({});
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR');
@@ -41,30 +43,56 @@ const PacientesList: React.FC<PacientesListProps> = ({
     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   };
 
+  // 🔥 NOVA FUNÇÃO: Formata CPF com partes ocultas
+  const formatCPFHidden = (cpf: string): string => {
+    const numeros = cpf.replace(/\D/g, '');
+    if (numeros.length !== 11) return formatCPF(cpf);
+    
+    // Mostra apenas os 3 primeiros e 2 últimos dígitos
+    // Exemplo: 123.456.789-00 -> 123.***.***-00
+    const primeiro = numeros.substring(0, 3);
+    const ultimo = numeros.substring(9, 11);
+    
+    return `${primeiro}.***.***-${ultimo}`;
+  };
+
+  // 🔥 NOVA FUNÇÃO: Alterna visibilidade do CPF
+  const toggleCPFVisibility = (pacienteId: string) => {
+    setShowFullCPF(prev => ({
+      ...prev,
+      [pacienteId]: !prev[pacienteId]
+    }));
+  };
+
+  // 🔥 NOVA FUNÇÃO: Obtém o CPF formatado com base na visibilidade
+  const getFormattedCPF = (cpf: string, showFull: boolean): string => {
+    if (showFull) {
+      return formatCPF(cpf);
+    }
+    return formatCPFHidden(cpf);
+  };
+
   // Cálculos de paginação
   const totalPages = Math.ceil(pacientes.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentPacientes = pacientes.slice(startIndex, endIndex);
 
-  // Função para mudar de página
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
-  // Gerar itens da paginação
   const renderPaginationItems = () => {
     const items = [];
-    const maxVisiblePages = 5; // Número máximo de páginas visíveis na paginação
+    const maxVisiblePages = 5;
 
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
 
-    // Botão "Anterior"
     items.push(
       <Pagination.Prev
         key="prev"
@@ -73,7 +101,6 @@ const PacientesList: React.FC<PacientesListProps> = ({
       />
     );
 
-    // Primeira página
     if (startPage > 1) {
       items.push(
         <Pagination.Item key={1} onClick={() => handlePageChange(1)}>
@@ -85,7 +112,6 @@ const PacientesList: React.FC<PacientesListProps> = ({
       }
     }
 
-    // Páginas numeradas
     for (let page = startPage; page <= endPage; page++) {
       items.push(
         <Pagination.Item
@@ -98,7 +124,6 @@ const PacientesList: React.FC<PacientesListProps> = ({
       );
     }
 
-    // Última página
     if (endPage < totalPages) {
       if (endPage < totalPages - 1) {
         items.push(<Pagination.Ellipsis key="ellipsis-end" />);
@@ -110,7 +135,6 @@ const PacientesList: React.FC<PacientesListProps> = ({
       );
     }
 
-    // Botão "Próximo"
     items.push(
       <Pagination.Next
         key="next"
@@ -181,7 +205,25 @@ const PacientesList: React.FC<PacientesListProps> = ({
                         <div className="fw-semibold">{paciente.nome}</div>
                       </td>
                       <td>
-                        <code>{formatCPF(paciente.cpf)}</code>
+                        <div className="d-flex align-items-center gap-2">
+                          <code className="user-select-all" style={{ fontSize: '0.9rem' }}>
+                            {getFormattedCPF(paciente.cpf, showFullCPF[paciente.id] || false)}
+                          </code>
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="p-0 text-secondary text-decoration-none"
+                            onClick={() => toggleCPFVisibility(paciente.id)}
+                            title={showFullCPF[paciente.id] ? 'Ocultar CPF' : 'Mostrar CPF completo'}
+                            style={{ fontSize: '0.8rem' }}
+                          >
+                            {showFullCPF[paciente.id] ? (
+                              <FaEyeSlash size={14} />
+                            ) : (
+                              <FaEye size={14} />
+                            )}
+                          </Button>
+                        </div>
                       </td>
                       <td>
                         {formatDate(paciente.dataNascimento)}
@@ -227,7 +269,6 @@ const PacientesList: React.FC<PacientesListProps> = ({
               </Table>
             </div>
             
-            {/* Paginação */}
             {totalPages > 1 && (
               <div className="d-flex justify-content-center py-3 border-top">
                 <Pagination className="mb-0">
