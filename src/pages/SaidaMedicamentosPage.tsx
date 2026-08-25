@@ -102,6 +102,7 @@ const SaidaMedicamentosPage: React.FC = () => {
   return (
     <div className="container-fluid">
       <div className="row mb-4">
+        <p></p>
         {/* Mensagens modernas */}
         {successMessage && (
           <div className="alert alert-success" role="alert">
